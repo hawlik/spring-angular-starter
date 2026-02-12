@@ -1,0 +1,167 @@
+# Spring Boot + Angular Starter
+
+A ready-to-use starter template for building web applications with a Spring Boot API and Angular multi-project frontend. Includes a complete authentication system out of the box.
+
+## Auth Features Included
+
+- Login / Logout with JWT in HttpOnly cookies
+- CSRF protection (double-submit cookie pattern)
+- Password reset flow (forgot password, email token, reset)
+- Role-based access control (USER, ADMIN)
+- Auth guards, interceptors, and shared components in Angular
+
+## Project Structure
+
+```
+spring-angular-starter/
+├── apps/
+│   ├── api/                    # Spring Boot REST API
+│   │   ├── src/
+│   │   │   ├── main/java/com/example/app/
+│   │   │   └── main/resources/
+│   │   └── pom.xml
+│   │
+│   └── frontend/               # Angular workspace
+│       ├── projects/
+│       │   ├── user-ui/        # User-facing application (port 4200)
+│       │   ├── admin-ui/       # Admin panel (port 4201)
+│       │   └── shared/         # Shared library (@app/shared)
+│       ├── angular.json
+│       └── package.json
+│
+├── docker/
+│   ├── api.Dockerfile
+│   ├── frontend.Dockerfile
+│   └── nginx.conf
+│
+├── docker-compose.yml
+└── README.md
+```
+
+## Tech Stack
+
+### Backend
+- Java 25
+- Spring Boot 4.0.2
+- Spring Security 7 + JWT (JJWT)
+- Spring Data JPA
+- PostgreSQL 17
+- Flyway migrations
+- Lombok
+- Testcontainers
+
+### Frontend
+- Angular 21
+- TypeScript 5.9
+- Tailwind CSS 4
+- Angular CDK
+
+## Prerequisites
+
+- Java 25+
+- Node.js 22+
+- Docker & Docker Compose
+
+## Quick Start
+
+### 1. Start Infrastructure
+
+```bash
+docker compose up -d
+```
+
+Services:
+- PostgreSQL: `localhost:5432` (user: appdb, password: appdb)
+- MailHog Web UI: http://localhost:8025
+
+### 2. Run API
+
+```bash
+cd apps/api
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+API: http://localhost:8080
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+### 3. Run Frontend
+
+```bash
+cd apps/frontend
+npm install
+
+# User UI (port 4200)
+npm run start:user
+
+# Admin UI (port 4201)
+npm run start:admin
+```
+
+### 4. Login
+
+- User: `user@example.com` / `user`
+- Admin: `admin@example.com` / `admin`
+
+## Available Scripts
+
+### Frontend
+
+| Command | Description |
+|---------|-------------|
+| `npm run start:user` | Start user UI dev server |
+| `npm run start:admin` | Start admin UI dev server |
+| `npm run build:user` | Build user UI for production |
+| `npm run build:admin` | Build admin UI for production |
+| `npm run build:all` | Build both applications |
+| `npm run build:shared` | Build shared library |
+| `npm test` | Run tests |
+
+### API
+
+| Command | Description |
+|---------|-------------|
+| `./mvnw spring-boot:run` | Start server |
+| `./mvnw test` | Run tests |
+| `./mvnw package` | Build JAR |
+
+## Migrating Frontend to Nx
+
+The frontend setup uses the Angular CLI multi-project workspace to keep things simple. For a real-world application you will likely want to migrate to [Nx](https://nx.dev) for better caching, task orchestration, and dependency graph visualization. This can be done with a single command.
+
+From the frontend workspace root:
+
+```bash
+cd apps/frontend
+npx nx@latest init
+```
+
+This will:
+- Install `nx`, `@nx/workspace`, and `prettier`
+- Create an `nx.json` configuration file
+- Split `angular.json` into separate `project.json` files for each project (`user-ui`, `admin-ui`, `shared`)
+
+After the migration you can use `nx` instead of `ng`:
+
+```bash
+npx nx serve user-ui
+npx nx serve admin-ui
+npx nx build user-ui --configuration production
+npx nx run-many -t build                           # build all projects in parallel
+npx nx graph                                        # visualize project dependency graph
+```
+
+Nx will automatically detect that `user-ui` and `admin-ui` depend on the `shared` library and build them in the correct order. You also get [computation caching](https://nx.dev/concepts/how-caching-works) out of the box - unchanged projects are not rebuilt.
+
+> If you prefer the full integrated monorepo layout (moving projects into `apps/` and `libs/` folders), run `npx nx@latest init --integrated` instead.
+
+For more details see the [Nx Angular migration guide](https://nx.dev/docs/technologies/angular/migration/angular).
+
+## Customization
+
+To adapt this template for your project:
+
+1. **Rename Java package**: Move `com.example.app` to your package (e.g., `com.mycompany.myapp`) and update `pom.xml` groupId
+2. **Rename database**: Update `DB_NAME`, `DB_USER`, `DB_PASSWORD` in `docker-compose.yml` and `application.properties`
+3. **Rename frontend**: Update `name` in `apps/frontend/package.json` and the `@app/shared` path alias in `tsconfig.json`
+4. **Add your domain**: Create new entities, repositories, and services alongside the existing auth module
+5. **Add Flyway migrations**: Create new `V005__*.sql` files in `apps/api/src/main/resources/db/migration/`

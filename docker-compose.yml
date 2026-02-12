@@ -1,0 +1,31 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:17-alpine
+    container_name: starter-db
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appdb
+      POSTGRES_PASSWORD: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appdb -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MailHog - Email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: starter-mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    logging:
+      driver: none
+
+volumes:
+  postgres_data:
