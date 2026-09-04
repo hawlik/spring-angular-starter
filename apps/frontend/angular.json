@@ -76,22 +76,12 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
             "tsConfig": "projects/user-ui/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/user-ui/src/favicon.ico",
-              "projects/user-ui/src/assets"
-            ],
-            "styles": [
-              "projects/user-ui/src/styles.scss"
-            ],
-            "scripts": []
+            "setupFiles": [
+              "projects/user-ui/src/test-setup.ts"
+            ]
           }
         }
       }
@@ -169,22 +159,12 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
             "tsConfig": "projects/admin-ui/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/admin-ui/src/favicon.ico",
-              "projects/admin-ui/src/assets"
-            ],
-            "styles": [
-              "projects/admin-ui/src/styles.scss"
-            ],
-            "scripts": []
+            "setupFiles": [
+              "projects/admin-ui/src/test-setup.ts"
+            ]
           }
         }
       }
@@ -211,13 +191,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/shared/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/shared/tsconfig.spec.json"
           }
         }
       }
