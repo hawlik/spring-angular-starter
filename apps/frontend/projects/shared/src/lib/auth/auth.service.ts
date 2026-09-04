@@ -4,6 +4,7 @@ import { Observable, catchError, map, of, switchMap } from 'rxjs';
 
 import {
   AuthUser,
+  ChangePasswordRequest,
   ForgotPasswordRequest,
   LoginRequest,
   MessageResponse,
@@ -78,6 +79,14 @@ export class AuthService {
 
   resetPassword(req: ResetPasswordRequest): Observable<MessageResponse> {
     return this.http.post<MessageResponse>('/auth/reset-password', req);
+  }
+
+  changePassword(req: ChangePasswordRequest): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>('/auth/change-password', req);
+  }
+
+  refresh(): Observable<void> {
+    return this.http.post<void>('/auth/refresh', {});
   }
 
   clearAuth(): void {

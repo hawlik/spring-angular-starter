@@ -10,6 +10,7 @@ export interface AuthUser {
 export interface LoginRequest {
   username: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface ForgotPasswordRequest {
@@ -32,4 +33,9 @@ export interface ResetPasswordRequest {
 export interface MessageResponse {
   message?: string;
   error?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }

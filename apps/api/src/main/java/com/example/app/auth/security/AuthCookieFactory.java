@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class AuthCookieFactory {
 
   public static final String ACCESS_TOKEN_NAME = "ACCESS_TOKEN";
+  public static final String REFRESH_TOKEN_NAME = "REFRESH_TOKEN";
 
   private final boolean secure;
 
@@ -32,6 +33,26 @@ public class AuthCookieFactory {
         .secure(secure)
         .sameSite("Lax")
         .path("/")
+        .maxAge(0)
+        .build();
+  }
+
+  public ResponseCookie refreshToken(String token, Duration ttl) {
+    return ResponseCookie.from(REFRESH_TOKEN_NAME, token)
+        .httpOnly(true)
+        .secure(secure)
+        .sameSite("Lax")
+        .path("/auth")
+        .maxAge(ttl)
+        .build();
+  }
+
+  public ResponseCookie clearRefreshToken() {
+    return ResponseCookie.from(REFRESH_TOKEN_NAME, "")
+        .httpOnly(true)
+        .secure(secure)
+        .sameSite("Lax")
+        .path("/auth")
         .maxAge(0)
         .build();
   }

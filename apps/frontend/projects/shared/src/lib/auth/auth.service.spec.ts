@@ -55,7 +55,7 @@ describe('AuthService', () => {
   });
 
   it('login stores the user and the auth flag', () => {
-    service.login({ username: 'jane@example.com', password: 'secret' }).subscribe();
+    service.login({ username: 'jane@example.com', password: 'secret', rememberMe: false }).subscribe();
 
     httpMock.expectOne('/auth/login').flush(null);
     httpMock.expectOne('/auth/me').flush(testUser);
@@ -101,5 +101,35 @@ describe('AuthService', () => {
     expect(service.user()).toBeNull();
     expect(localStorage.getItem('authenticated')).toBeNull();
     expect(service.initialized()).toBe(true);
+  });
+
+  it('changePassword posts the current and new password', () => {
+    service.changePassword({ currentPassword: 'old', newPassword: 'NewPassw0rd' }).subscribe();
+
+    const req = httpMock.expectOne('/auth/change-password');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ currentPassword: 'old', newPassword: 'NewPassw0rd' });
+    req.flush({ message: 'Password changed successfully.' });
+  });
+
+  it('refresh posts to /auth/refresh', () => {
+    service.refresh().subscribe();
+
+    const req = httpMock.expectOne('/auth/refresh');
+    expect(req.request.method).toBe('POST');
+    req.flush(null);
+  });
+
+  it('login sends the rememberMe flag', () => {
+    service.login({ username: 'jane@example.com', password: 'secret', rememberMe: true }).subscribe();
+
+    const req = httpMock.expectOne('/auth/login');
+    expect(req.request.body).toEqual({
+      username: 'jane@example.com',
+      password: 'secret',
+      rememberMe: true,
+    });
+    req.flush(null);
+    httpMock.expectOne('/auth/me').flush(testUser);
   });
 });
