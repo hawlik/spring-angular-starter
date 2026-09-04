@@ -83,6 +83,16 @@
               "projects/user-ui/src/test-setup.ts"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/user-ui/**/*.ts",
+              "projects/user-ui/**/*.html"
+            ],
+            "eslintConfig": "projects/user-ui/eslint.config.js"
+          }
         }
       }
     },
@@ -166,6 +176,16 @@
               "projects/admin-ui/src/test-setup.ts"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/admin-ui/**/*.ts",
+              "projects/admin-ui/**/*.html"
+            ],
+            "eslintConfig": "projects/admin-ui/eslint.config.js"
+          }
         }
       }
     },
@@ -194,6 +214,16 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/shared/tsconfig.spec.json"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/shared/**/*.ts",
+              "projects/shared/**/*.html"
+            ],
+            "eslintConfig": "projects/shared/eslint.config.js"
           }
         }
       }
