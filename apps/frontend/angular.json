@@ -21,7 +21,9 @@
             "outputPath": "dist/user-ui",
             "index": "projects/user-ui/src/index.html",
             "browser": "projects/user-ui/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/user-ui/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -76,7 +78,10 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "projects/user-ui/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -109,7 +114,9 @@
             "outputPath": "dist/admin-ui",
             "index": "projects/admin-ui/src/index.html",
             "browser": "projects/admin-ui/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/admin-ui/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -164,7 +171,10 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "projects/admin-ui/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -204,13 +214,17 @@
           "builder": "@angular/build:karma",
           "options": {
             "tsConfig": "projects/shared/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
           }
         }
       }
     }
   },
   "cli": {
+    "packageManager": "npm",
     "analytics": false
   },
   "schematics": {
