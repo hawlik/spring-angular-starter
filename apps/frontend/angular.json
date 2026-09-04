@@ -31,7 +31,7 @@
               "projects/user-ui/src/assets"
             ],
             "styles": [
-              "projects/user-ui/src/styles.scss"
+              "projects/user-ui/src/styles.css"
             ],
             "scripts": []
           },
@@ -114,7 +114,7 @@
               "projects/admin-ui/src/assets"
             ],
             "styles": [
-              "projects/admin-ui/src/styles.scss"
+              "projects/admin-ui/src/styles.css"
             ],
             "scripts": []
           },
