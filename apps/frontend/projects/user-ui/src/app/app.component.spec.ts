@@ -3,7 +3,10 @@ import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { AuthService, AuthUser } from '@app/shared';
+import { Dialog } from '@angular/cdk/dialog';
+import { of } from 'rxjs';
+
+import { AuthService, AuthUser, ChangePasswordDialogComponent } from '@app/shared';
 
 import { AppComponent } from './app.component';
 
@@ -64,13 +67,39 @@ describe('AppComponent', () => {
     auth.user.set(testUser);
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelector('header button').click();
+    const signOut = Array.from<HTMLButtonElement>(
+      fixture.nativeElement.querySelectorAll('header button'),
+    ).find(b => b.textContent?.includes('Sign Out'));
+    signOut!.click();
     httpMock.expectOne('/auth/logout').flush(null);
     await fixture.whenStable();
 
     expect(auth.isAuthenticated()).toBe(false);
     expect(navigate).toHaveBeenCalledWith('/login');
     fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('header')).toBeNull();
+  });
+
+  it('opens the change-password dialog from the header', () => {
+    const dialog = TestBed.inject(Dialog);
+    const open = vi.spyOn(dialog, 'open').mockReturnValue({ closed: of(undefined) } as never);
+    auth.user.set(testUser);
+    fixture.detectChanges();
+
+    const buttons: HTMLButtonElement[] = Array.from(
+      fixture.nativeElement.querySelectorAll('header button'),
+    );
+    const changePassword = buttons.find(b => b.textContent?.includes('Change Password'));
+    expect(changePassword).toBeDefined();
+
+    changePassword!.click();
+
+    expect(open).toHaveBeenCalledWith(ChangePasswordDialogComponent, { panelClass: 'modal-panel' });
+  });
+
+  it('does not show the change-password button while signed out', () => {
+    fixture.detectChanges();
+
     expect(fixture.nativeElement.querySelector('header')).toBeNull();
   });
 });

@@ -31,6 +31,7 @@
               "projects/user-ui/src/assets"
             ],
             "styles": [
+              "@angular/cdk/overlay-prebuilt.css",
               "projects/user-ui/src/styles.css"
             ],
             "scripts": []
@@ -124,6 +125,7 @@
               "projects/admin-ui/src/assets"
             ],
             "styles": [
+              "@angular/cdk/overlay-prebuilt.css",
               "projects/admin-ui/src/styles.css"
             ],
             "scripts": []
