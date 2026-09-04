@@ -43,7 +43,7 @@ public class SecurityConfig {
               // on every authenticated request. The raw token in the cookie is stable
               // and doesn't need rotation for double-submit cookie security.
             })
-            .ignoringRequestMatchers("/auth/login", "/auth/forgot-password", "/auth/verify-reset-token")
+            .ignoringRequestMatchers("/auth/login", "/auth/refresh", "/auth/forgot-password", "/auth/verify-reset-token")
         )
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint((request, response, authException) ->
@@ -51,9 +51,11 @@ public class SecurityConfig {
             )
         )
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/login", "/auth/logout", "/auth/forgot-password",
-                "/auth/verify-reset-token", "/auth/reset-password")
+            .requestMatchers("/auth/login", "/auth/logout", "/auth/refresh",
+                "/auth/forgot-password", "/auth/verify-reset-token", "/auth/reset-password")
             .permitAll()
+            .requestMatchers("/admin/**")
+            .hasRole("ADMIN")
             .anyRequest()
             .authenticated()
         )

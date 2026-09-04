@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import com.example.app.auth.model.RefreshToken;
+import com.example.app.auth.repository.RefreshTokenRepository;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -39,6 +41,9 @@ class AuthControllerTest {
 
   @Autowired
   private WebApplicationContext context;
+
+  @Autowired
+  private RefreshTokenRepository refreshTokenRepository;
 
   private MockMvc mockMvc;
 
@@ -223,6 +228,80 @@ class AuthControllerTest {
           .andExpect(jsonPath("$.email").value("admin@example.com"))
           .andExpect(jsonPath("$.roles").isArray())
           .andExpect(jsonPath("$.roles[0]").value("ADMIN"));
+    }
+  }
+
+  @Nested
+  @DisplayName("Refresh token multi-device behavior")
+  class MultiDeviceTests {
+
+    private static final String CHROME_UA =
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            + "Chrome/147.0.0.0 Safari/537.36";
+    private static final String FIREFOX_UA =
+        "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0";
+
+    @Test
+    @DisplayName("logins from two different browsers leave both refresh tokens valid")
+    void differentBrowsersBothStayLoggedIn() throws Exception {
+      Cookie chromeRefresh = loginAndGetRefreshCookie(CHROME_UA);
+      Cookie firefoxRefresh = loginAndGetRefreshCookie(FIREFOX_UA);
+
+      assertThat(chromeRefresh.getValue()).isNotEqualTo(firefoxRefresh.getValue());
+
+      mockMvc.perform(post("/auth/refresh").cookie(chromeRefresh))
+          .andExpect(status().isOk());
+      mockMvc.perform(post("/auth/refresh").cookie(firefoxRefresh))
+          .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("logging in twice from the same browser revokes the earlier orphan token")
+    void sameBrowserSecondLoginRevokesOrphan() throws Exception {
+      Cookie firstLogin = loginAndGetRefreshCookie(CHROME_UA);
+      loginAndGetRefreshCookie(CHROME_UA);
+
+      mockMvc.perform(post("/auth/refresh").cookie(firstLogin))
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("logging in from a new browser does not revoke an existing session on another browser")
+    void newDeviceLoginPreservesOtherDevice() throws Exception {
+      Cookie firefoxRefresh = loginAndGetRefreshCookie(FIREFOX_UA);
+      loginAndGetRefreshCookie(CHROME_UA);
+
+      mockMvc.perform(post("/auth/refresh").cookie(firefoxRefresh))
+          .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("rotation marks the original token as revoked in the database")
+    void rotationRevokesOriginalToken() throws Exception {
+      Cookie refresh = loginAndGetRefreshCookie(CHROME_UA);
+
+      mockMvc.perform(post("/auth/refresh").cookie(refresh))
+          .andExpect(status().isOk());
+
+      RefreshToken after = refreshTokenRepository.findByToken(refresh.getValue()).orElseThrow();
+      assertThat(after.isRevoked()).isTrue();
+    }
+
+    private Cookie loginAndGetRefreshCookie(String userAgent) throws Exception {
+      MvcResult result = mockMvc.perform(post("/auth/login")
+              .header("User-Agent", userAgent)
+              .contentType(MediaType.APPLICATION_JSON)
+              .content("""
+                  {
+                    "username": "user@example.com",
+                    "password": "user"
+                  }
+                  """))
+          .andExpect(status().isOk())
+          .andReturn();
+      Cookie refresh = result.getResponse().getCookie("REFRESH_TOKEN");
+      assertThat(refresh).as("Login should set REFRESH_TOKEN cookie").isNotNull();
+      return refresh;
     }
   }
 

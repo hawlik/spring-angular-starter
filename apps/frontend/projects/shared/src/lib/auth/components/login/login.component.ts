@@ -39,7 +39,7 @@ import { AuthService } from '../../auth.service';
               />
             </div>
 
-            <div class="mb-6">
+            <div class="mb-4">
               <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
@@ -51,6 +51,16 @@ import { AuthService } from '../../auth.service';
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                 [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
               />
+            </div>
+
+            <div class="mb-6 flex items-center gap-2">
+              <input
+                id="rememberMe"
+                type="checkbox"
+                formControlName="rememberMe"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              />
+              <label for="rememberMe" class="text-sm text-gray-700">Keep me logged in</label>
             </div>
 
             <button
@@ -83,6 +93,7 @@ export class LoginComponent {
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+    rememberMe: [false],
   });
 
   onSubmit(): void {

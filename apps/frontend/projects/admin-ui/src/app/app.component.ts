@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { Dialog } from '@angular/cdk/dialog';
 
-import { AuthService } from '@app/shared';
+import { AuthService, ChangePasswordDialogComponent } from '@app/shared';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,13 @@ import { AuthService } from '@app/shared';
             <h1 class="text-xl font-bold">Admin Panel</h1>
             <div class="flex items-center gap-4">
               <span class="text-sm">{{ authService.userDisplayName() }}</span>
+              <button
+                type="button"
+                (click)="openChangePasswordDialog()"
+                class="rounded-md bg-gray-700 hover:bg-gray-600 px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+              >
+                Change Password
+              </button>
               <button
                 type="button"
                 (click)="logout()"
@@ -35,6 +43,11 @@ import { AuthService } from '@app/shared';
 export class AppComponent {
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(Dialog);
+
+  openChangePasswordDialog(): void {
+    this.dialog.open(ChangePasswordDialogComponent, { panelClass: 'modal-panel' });
+  }
 
   logout(): void {
     this.authService.logout().subscribe(() => {
